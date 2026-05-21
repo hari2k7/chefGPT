@@ -1,21 +1,21 @@
-# 👨‍🍳 ChefGPT – AI Recipe Generator
+# ChefGPT – AI Recipe Generator
 
 A full-stack AI-powered Recipe Generator built with the **MERN stack** and **Google Gemini API**.
 
 ---
 
-## ✨ Features
+## Features
 
-- 🤖 AI recipe generation via **Google Gemini 1.5 Flash**
-- 💾 Save all recipes to **MongoDB Atlas**
-- ❤️ Favorite & filter recipes
-- 🔍 View full step-by-step recipe details
-- 🗑️ Delete recipes
-- 📱 Responsive, polished UI
+- AI recipe generation via **Google Gemini 1.5 Flash**
+- Save all recipes to **MongoDB Atlas**
+- Favorite & filter recipes
+- View full step-by-step recipe details
+- Delete recipes
+- Responsive, polished UI
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - React 18 + Vite
@@ -30,7 +30,7 @@ A full-stack AI-powered Recipe Generator built with the **MERN stack** and **Goo
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 chefgpt/
@@ -67,7 +67,7 @@ chefgpt/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the repo
 
@@ -122,7 +122,7 @@ Frontend runs on `http://localhost:3000`
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 | Method | Route                        | Description          |
 |--------|------------------------------|----------------------|
@@ -134,6 +134,6 @@ Frontend runs on `http://localhost:3000`
 
 ---
 
-## 👤 Author
+## Author
 
-Built with ❤️ using MERN + Gemini AI
+Hariharasudhan D
