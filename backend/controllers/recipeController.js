@@ -1,10 +1,10 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-const Recipe = require("../models/Recipe");
+import Groq from "groq-sdk";
+import Recipe from "../models/Recipe.js";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // POST /api/recipes/generate
-const generateRecipe = async (req, res) => {
+export const generateRecipe = async (req, res) => {
   const { prompt } = req.body;
 
   if (!prompt || prompt.trim() === "") {
@@ -12,8 +12,6 @@ const generateRecipe = async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
     const systemPrompt = `You are ChefGPT, an expert culinary AI assistant. Generate a detailed recipe based on the user's request.
 
 Return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
@@ -34,10 +32,13 @@ Return ONLY a valid JSON object with this exact structure (no markdown, no extra
 
 User request: ${prompt}`;
 
-    const result = await model.generateContent(systemPrompt);
-    const rawText = result.response.text();
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: systemPrompt }],
+    });
 
-    // Strip markdown fences if present
+    const rawText = completion.choices[0].message.content;
+
     const cleaned = rawText
       .replace(/```json\s*/gi, "")
       .replace(/```\s*/g, "")
@@ -48,17 +49,10 @@ User request: ${prompt}`;
       recipeData = JSON.parse(cleaned);
     } catch (parseErr) {
       console.error("JSON parse error:", parseErr.message);
-      return res
-        .status(500)
-        .json({ error: "AI returned invalid format. Please try again." });
+      return res.status(500).json({ error: "AI returned invalid format. Please try again." });
     }
 
-    // Save to MongoDB
-    const recipe = new Recipe({
-      ...recipeData,
-      prompt: prompt.trim(),
-    });
-
+    const recipe = new Recipe({ ...recipeData, prompt: prompt.trim() });
     const saved = await recipe.save();
     res.status(201).json(saved);
   } catch (err) {
@@ -68,7 +62,7 @@ User request: ${prompt}`;
 };
 
 // GET /api/recipes
-const getAllRecipes = async (req, res) => {
+export const getAllRecipes = async (req, res) => {
   try {
     const recipes = await Recipe.find().sort({ createdAt: -1 });
     res.json(recipes);
@@ -78,7 +72,7 @@ const getAllRecipes = async (req, res) => {
 };
 
 // GET /api/recipes/:id
-const getRecipeById = async (req, res) => {
+export const getRecipeById = async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe) return res.status(404).json({ error: "Recipe not found" });
@@ -89,7 +83,7 @@ const getRecipeById = async (req, res) => {
 };
 
 // DELETE /api/recipes/:id
-const deleteRecipe = async (req, res) => {
+export const deleteRecipe = async (req, res) => {
   try {
     const recipe = await Recipe.findByIdAndDelete(req.params.id);
     if (!recipe) return res.status(404).json({ error: "Recipe not found" });
@@ -100,7 +94,7 @@ const deleteRecipe = async (req, res) => {
 };
 
 // PATCH /api/recipes/:id/favorite
-const toggleFavorite = async (req, res) => {
+export const toggleFavorite = async (req, res) => {
   try {
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe) return res.status(404).json({ error: "Recipe not found" });
@@ -110,12 +104,4 @@ const toggleFavorite = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-};
-
-module.exports = {
-  generateRecipe,
-  getAllRecipes,
-  getRecipeById,
-  deleteRecipe,
-  toggleFavorite,
 };

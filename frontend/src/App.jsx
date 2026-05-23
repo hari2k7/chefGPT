@@ -15,9 +15,6 @@ export default function App() {
           <Route path="/recipe/:id" element={<RecipeDetail />} />
         </Routes>
       </main>
-      <footer className="footer">
-        Made with ❤️ by <span>ChefGPT</span> — powered by Gemini AI &amp; MERN Stack
-      </footer>
     </div>
   );
 }
